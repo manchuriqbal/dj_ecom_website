@@ -2078,7 +2078,8 @@ ol {
 		margin-left: 45px;
 	}
 	.inner-header .user-access {
-		display: none;
+		float: right;
+		margin-right: 40px;
 	}
 	.header-info .shipping-chrg {
 		margin-right: 10px;
