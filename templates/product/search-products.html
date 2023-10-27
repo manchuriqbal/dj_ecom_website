@@ -1,24 +1,22 @@
 {% extends "../base.html" %}
 {% load static %}
 
-{% block title %} Product list {% endblock title %}
+{% block title %} Search Products {% endblock title %}
 
 {% block content %}
 
 <!-- Page Add Section Begin -->
 <section class="page-add">
     <div class="container">
-        <div class="categories-controls">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="categories-filter">
-                        <div class="cf-right">
-                            <span>{{paginator.count}} Products</span>
-                            {% include "../paginator.html" %}
-                        </div>
-                    </div>
+        <div class="row">
+            <div class="col-lg-4">
+                {% if products.count > 0 %}
+                <div class="page-breadcrumb">
+                    <h4>{{products.count}} Result found for {{key}}</h4>
                 </div>
+                {% endif %}
             </div>
+
         </div>
     </div>
 </section>
@@ -28,8 +26,9 @@
 <section class="categories-page spad">
     <div class="container">
 
+        {% if products.count > 0 %}
         <div class="row">
-            {% for product in object_list %}
+            {% for product in products %}
             <div class="col-lg-3 col-md-6">
                 <div class="single-product-item">
                     <a href="{% url "product_page" product.slug %}">
@@ -48,6 +47,9 @@
             </div>
             {% endfor %}
         </div>
+        {% else %}
+        {% include "../no-result.html" %}
+        {% endif %}
     </div>
 </section>
 <!-- Categories Page Section End -->
