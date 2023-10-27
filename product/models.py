@@ -20,8 +20,10 @@ class Product(models.Model):
     discription = models.TextField(blank=True, null=True,)
     price = models.DecimalField(max_digits=8, decimal_places=2)
     thumbnail = models.URLField()
+    in_stock = models.BooleanField(default=True)
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
+
 
     class Meta:
         ordering = ['-id']
@@ -29,6 +31,11 @@ class Product(models.Model):
     def __str__(self) -> str:
         return self.title
     
+    @property
+    def related(self):
+        return self.category.products.all().exclude(pk=self.pk)
+    
+
 class Slider(models.Model):
     title = models.CharField(max_length=50)
     title2 = models.CharField(max_length=50, default='Lookbook.')
