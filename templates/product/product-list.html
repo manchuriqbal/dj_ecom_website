@@ -5,24 +5,7 @@
 
 {% block content %}
 
-<!-- Page Add Section Begin -->
-<section class="page-add">
-    <div class="container">
-        <div class="categories-controls">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="categories-filter">
-                        <div class="cf-right">
-                            <span>{{paginator.count}} Products</span>
-                            {% include "../paginator.html" %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-<!-- Page Add Section End -->
+
 
 <!-- Categories Page Section Begin -->
 <section class="categories-page spad">
@@ -51,5 +34,24 @@
     </div>
 </section>
 <!-- Categories Page Section End -->
+
+<!-- Paginator Section Begin -->
+<section class="page-add">
+    <div class="container">
+        <div class="categories-controls">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="categories-filter">
+                        <div class="cf-right">
+                            <span>{{paginator.count}} Products</span>
+                            {% include "../paginator.html" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Paginator  Section End -->
 
 {% endblock content %}

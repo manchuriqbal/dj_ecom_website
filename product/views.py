@@ -1,10 +1,12 @@
+from typing import Any
 from django.db.models import Q
+from django.http import HttpRequest, HttpResponse
 from django.views import generic
 from django.shortcuts import render
 
 from .models import Category, Product, Slider
 
-
+from cart.carts import Cart
 from django.core.paginator import (
     Paginator,
     PageNotAnInteger,
@@ -31,7 +33,7 @@ class ProductDetails(generic.DetailView):
     model = Product
     template_name = 'product/product-page.html'
     slug_url_kwarg = 'slug'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['related_products'] = self.get_object().related
