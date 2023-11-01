@@ -55,6 +55,7 @@ class AddCoupon(generic.View):
             coupon = coupon.first()
             expiry_date = coupon.expiry_date
             active_date = coupon.active_date
+            minimum_amount = coupon.minimum_amount
             current_date = datetime.date(timezone.now())
             cart = Cart(self.request)
 
@@ -64,6 +65,10 @@ class AddCoupon(generic.View):
             
             if current_date < active_date:
                 messages.warning(self.request, 'Coupon code are Not Start until now')
+                return redirect('cart')
+            
+            if cart.total() < minimum_amount:
+                messages.warning(self.request, f'You have to shop minimum ${minimum_amount}. Otherwise you can\'t use this coupon code. ')
                 return redirect('cart')
 
             cart.coupon_add(coupon.id)
