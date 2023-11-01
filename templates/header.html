@@ -17,8 +17,9 @@
                 </a>
             </div>
             <div class="user-access">
-                <a href="#">Register</a>
-                <a href="#" class="in">Sign in</a>
+                {% if not request.user.is_authenticated %}
+                <a href="{% url "login" %}">Register</a>
+                {% endif %}
             </div>
             <nav class="main-menu mobile-menu" >
                 <ul>
@@ -31,6 +32,16 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% if request.user.is_authenticated %}
+                    <li>
+                        <a href="#">{{request.user.username|title}}</a>
+                            <ul class="sub-menu">
+                                <li><a href="{% url "logout" %}"> Logout </a></li>
+                                <li><a href="#"> Order </a></li>
+                                <li><a href="change_password"> Change Password </a></li>
+                            </ul>
+                    </li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>
