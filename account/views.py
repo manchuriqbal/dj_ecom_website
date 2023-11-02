@@ -1,4 +1,4 @@
-from typing import Any
+import copy
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -7,6 +7,8 @@ from django.views import generic
 from django.views.decorators.cache import never_cache
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
+
+from cart.carts import Cart
 
 from django.contrib.auth.views import (
     PasswordResetView,
@@ -51,7 +53,11 @@ class Login(LogoutRequiredMixin ,generic.View):
 
 class Logout(generic.View):
     def get(self, *args, **kwargs):
+        cart = Cart(self.request)
+        current_cart = copy.deepcopy(cart.cart)
+        coupon = copy.deepcopy(cart.coupon)
         logout(self.request)
+        cart.restore_after_logout(current_cart, coupon)
         return redirect('login')
     
 

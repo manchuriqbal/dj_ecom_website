@@ -29,6 +29,11 @@ class Cart(object):
         self.session[self.coupon_id] = coupon_id
         self.save()
 
+    def restore_after_logout(self, cart={}, coupon=None):
+        self.cart = self.session[self.cart_id] = cart
+        self.coupon = self.session[self.coupon_id] = coupon
+        self.save()
+
 
     def __iter__(self):
         products = Product.objects.filter(id__in=list(self.cart.keys()))
