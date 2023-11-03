@@ -1,0 +1,128 @@
+{% extends "../base.html" %}
+{% load static %}
+
+{% block title %}Checkout{% endblock title %}
+
+{% block content %}
+
+<section class="page-add">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="page-breadcrumb text-center">
+                    <h2>Checkout Your Cart</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="contact-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                {% if messages %}
+                {% include "message.html" %}
+                {% endif %}
+                <form id="checkout-form" class="contact-form mx-auto " method="POST">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-lg-12">
+
+                            <div>
+                                <input name="first_name" type="text" placeholder="First Name">
+                                <small id="error_first_name" class="text-danger"></small>
+                            </div>
+                            <div>
+                                <input name="last_name" type="text" placeholder="Last Name">
+                                <small id="error_last_name" class="text-danger"></small>
+                            </div>
+                            <div>
+                                <input name="email" type="email" placeholder="E-Mail">
+                                <small id="error_email" class="text-danger"></small>
+                            </div>
+                            <div>
+                                <input name="city" type="text" placeholder="City">
+                                <small id="error_city" class="text-danger"></small>
+                            </div>
+                            <div>
+                                <input name="zip_code" type="text" placeholder="Zip Code">
+                                <small id="error_zip_code" class="text-danger"></small>
+                            </div>
+                            <div>
+                                <input name="address" type="text" placeholder="Address">
+                                <small id="error_address" class="text-danger"></small>
+                                
+                            </div>
+                            
+
+                        </div>
+                        <div class="col-lg-12 mt-2">
+                            <button class="btn-block" type="submit">Pay</button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block extra_script %}
+<script>
+    
+    const form = document.getElementById('checkout-form');
+    const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    let formIsValid = false
+
+    const validateFormAndCheckout = () => {
+        const url = '/checkout/';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken' : csrfmiddlewaretoken
+            },
+            body: new FormData(form)
+        })
+        .then(response => {
+            return response.json();
+        })
+        .then(data => {
+           if (data.success) {
+                formIsValid = true;
+                new FormData(form).forEach((value, key)=> {
+                    if (key != 'csrfmiddlewaretoken') {
+                        document.getElementById(`error_${key}`).innerText = '';
+                    }
+                })
+                console.log('valid')
+           }
+           else{
+            let errors = data.errors;
+            formIsValid = false;
+            new FormData(form).forEach((value, key)=> {
+                    if (key != 'csrfmiddlewaretoken') {
+                        document.getElementById(`error_${key}`).innerText = '';
+                    }
+                });
+            Object.keys(errors).forEach(key =>{
+                document.getElementById(`error_${key}`).innerText = errors[key].join('');
+            })
+            
+            console.log('Invalid')
+           }
+        })
+        .catch(error =>{
+            console.log(error)
+        })
+    };
+    
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        validateFormAndCheckout();
+    })
+
+</script>
+{% endblock extra_script %}
