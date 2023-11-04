@@ -3,14 +3,31 @@
 
 {% block title %}Checkout{% endblock title %}
 
+
+{% block links %}
+<style>
+    #paypal-button-container {
+        display: None;
+    }
+    .paypal-title {
+        display: None;
+    }
+</style>
+
+{% endblock links %}
+
+
 {% block content %}
 
 <section class="page-add">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <div class="page-breadcrumb text-center">
+                <div class="page-breadcrumb text-center checkout-title">
                     <h2>Checkout Your Cart</h2>
+                </div>
+                <div class="page-breadcrumb text-center paypal-title">
+                    <h2>Pay Your Bill</h2>
                 </div>
             </div>
         </div>
@@ -20,7 +37,12 @@
 <div class="contact-section">
     <div class="container">
         <div class="row justify-content-center">
+            <div class="col-lg-12">
+               
+            </div>
             <div class="col-md-6">
+
+                <div id="paypal-button-container"></div>
                 {% if messages %}
                 {% include "message.html" %}
                 {% endif %}
@@ -71,11 +93,18 @@
 
 
 {% block extra_script %}
+<script src="https://www.paypal.com/sdk/js?client-id=AZdT6Ph9_LDfVnT6BIoLD2-Wo-A_PBWZrnXSpAdehb1QEZAQCr6dXKZajg6vpvzPLMkb7oKICfNsab70&currency=USD"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
     
+    const paypalCheckout = document.getElementById('paypal-button-container');
     const form = document.getElementById('checkout-form');
     const csrfmiddlewaretoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    let formIsValid = false
+    const checkoutTitle = document.querySelector('.checkout-title');
+    const paypalTitle = document.querySelector('.paypal-title');
+    let formIsValid = false;
+    const total = {{cart.cart_total}}
 
     const validateFormAndCheckout = () => {
         const url = '/checkout/';
@@ -97,7 +126,11 @@
                         document.getElementById(`error_${key}`).innerText = '';
                     }
                 })
-                console.log('valid')
+                paypalCheckout.style.display = 'block';
+                form.style.display= 'None';
+                paypalTitle.style.display = 'block';
+                checkoutTitle.style.display= 'None';
+
            }
            else{
             let errors = data.errors;
@@ -122,7 +155,65 @@
     form.addEventListener('submit', (event) => {
         event.preventDefault();
         validateFormAndCheckout();
-    })
+    });
+
+    paypal.Buttons({
+
+        // Call your server to set up the transaction
+        createOrder: (data, actions) => {
+            return actions.order.create({
+                purchase_units: [{
+                    amount: {
+                        value : parseFloat(total).toFixed(2)
+                    }
+                }]
+            })
+        },
+
+        // Call your server to finalize the transaction
+        onApprove: (data, actions) => {
+            return actions.order.captures().then(function(orderData) {
+
+                // Successful capture! For demo purposes:
+                console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                var transaction = orderData.purchase_units[0].payments.captures[0];
+                const amount = parseFloat(transaction.amount.value).toFixed(2);
+                const transactionId = transaction.id;
+                let customer = {};
+                new FormData(form).forEach((value, key) => {
+                    customer[key] = value;
+                })
+                delete customer['csrfmiddlewaretoken'];
+                customer['amount'] = amount;
+                customer['transactionId'] = transactionId;
+
+
+                fetch('/save-order/', {
+                    method:'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken' : csrfmiddlewaretoken
+                    },
+                    body: JSON.stringify(customer)
+                })
+                .then(response => {
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data)
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                })
+                Swal.fire(
+                    'Thank you!',
+                    'Your payment request is done!',
+                    'success'
+                    )
+            });
+        }
+
+    }).render('#paypal-button-container');
 
 </script>
 {% endblock extra_script %}

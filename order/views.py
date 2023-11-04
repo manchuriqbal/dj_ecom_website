@@ -1,3 +1,4 @@
+import json
 from django.views import generic
 from django.urls import reverse_lazy
 from django.http import JsonResponse
@@ -30,3 +31,12 @@ class Checkout(LoginRequiredMixin, generic.View):
                 'success':False,
                 'errors': dict(form.errors)
             })
+        
+class SaveOrder(LoginRequiredMixin, generic.View):
+    login_url = reverse_lazy('login')
+
+    def post(self, *args, **kwargs):
+        data = json.loads(self.request.body)
+        print(data)
+
+        return JsonResponse('ok', safe=False)
