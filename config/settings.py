@@ -156,3 +156,10 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'manchur.fiverr@gmail.com'
 EMAIL_HOST_PASSWORD = "gdia vbsp htmh kkjg"
+
+
+
+# Paypal credentials
+
+PAYPAL_CLIENT_ID = 'AZdT6Ph9_LDfVnT6BIoLD2-Wo-A_PBWZrnXSpAdehb1QEZAQCr6dXKZajg6vpvzPLMkb7oKICfNsab70'
+PAYPAL_SECRET_ID = 'EFYj0HmWSS9obou3Bul5J_hGSzNZcmfL9PBbb5emJ8MlhhGUUbcJpU9saK2tC5mL3szzrPoqW2CM_oq3'
